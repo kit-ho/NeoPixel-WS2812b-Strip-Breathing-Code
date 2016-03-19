@@ -9,13 +9,12 @@ int MinBrightness = 20;       //value 0-255
 int MaxBrightness = 100;      //value 0-255
 
 int numLoops1 = 10;
-int numLoops2 = 6;
-int numLoops3 = 5;
-int numLoops4 = 3;            //add new integer and value for different colors if needed.
+int numLoops2 = 5;
+//int numLoops3 = 5;
+//int numLoops4 = 3;          //add new integer and value for more color's loop if needed.
 
-int fadeHoldWait = 300;       //how many steps to stay lit before dimming again.
-int fadeInWait = 15;          //lighting up speed, steps.
-int fadeOutWait = 30;         //dimming speed, steps.
+int fadeInWait = 30;          //lighting up speed, steps.
+int fadeOutWait = 50;         //dimming speed, steps.
 
 //---------------------------------------------------------------------------------------------------//
 
@@ -24,18 +23,26 @@ void setup() {
   strip.show();
 }
 
+/*
+rgbBreathe(strip.Color(insert r,g,b color code),numLoops(refer to integer above), (duration for lights to hold before dimming. insert 0 to skip hold)
+rainbowBreathe(numLoops(refer to integer above),(duration for lights to hold before dimming. insert 0 to skip hold)
+*/
+
 void loop() {
-
+  
   //---strip will stay lit for some time before dimming again.----
-  rgbFadeIn_Hold_Out(strip.Color(255, 0, 0), numLoops1); //red.
-  rainbowFadeIn_Hold_Out(numLoops2);
+  
+  rgbBreathe(strip.Color(255, 0, 0), numLoops1, 250); //red.
+  rainbowBreathe(numLoops2, 250);
 
-  //---normal breathing.----
-  rgbFadeInOut(strip.Color(60, 255, 0), numLoops3);   //green.
-  rainbowFadeInOut(numLoops4);
+  //duplicate for more colors.
 }
 
-void rgbFadeIn_Hold_Out(uint32_t c, uint8_t x) {
+
+//Functions -----------------------------------------------------------------------------------------//
+
+
+void rgbBreathe(uint32_t c, uint8_t x, uint8_t y) {
   for (int j = 0; j < x; j++) {
     for (uint8_t b = MinBrightness; b < MaxBrightness; b++) {
       strip.setBrightness(b * 255 / 255);
@@ -49,7 +56,7 @@ void rgbFadeIn_Hold_Out(uint32_t c, uint8_t x) {
     for (uint16_t i = 0; i < strip.numPixels(); i++) {
       strip.setPixelColor(i, c);
       strip.show();
-      delay(fadeHoldWait);
+      delay(y);
     }
     for (uint8_t b = MaxBrightness; b > MinBrightness; b--) {
       strip.setBrightness(b * 255 / 255);
@@ -62,7 +69,7 @@ void rgbFadeIn_Hold_Out(uint32_t c, uint8_t x) {
   }
 }
 
-void rainbowFadeIn_Hold_Out(uint8_t x) {
+void rainbowBreathe(uint8_t x, uint8_t y) {
   for (int j = 0; j < x; j++) {
     for (uint8_t b = MinBrightness; b < MaxBrightness; b++) {
       strip.setBrightness(b * 255 / 255);
@@ -76,49 +83,7 @@ void rainbowFadeIn_Hold_Out(uint8_t x) {
     for (uint8_t i = 0; i < strip.numPixels(); i++) {
       strip.setPixelColor(i, Wheel(i * 256 / strip.numPixels()));
       strip.show();
-      delay(fadeHoldWait);
-    }
-    for (uint8_t b = MaxBrightness; b > MinBrightness; b--) {
-      strip.setBrightness(b * 255 / 255);
-      for (uint8_t i = 0; i < strip.numPixels(); i++) {
-        strip.setPixelColor(i, Wheel(i * 256 / strip.numPixels()));
-      }
-      strip.show();
-      delay(fadeOutWait);
-    }
-  }
-}
-
-void rgbFadeInOut(uint32_t c, uint8_t x) {
-  for (int j = 0; j < x; j++) {
-    for (uint8_t b = MinBrightness; b < MaxBrightness; b++) {
-      strip.setBrightness(b * 255 / 255);
-      for (uint16_t i = 0; i < strip.numPixels(); i++) {
-        strip.setPixelColor(i, c);
-      }
-      strip.show();
-      delay(fadeInWait);
-    }
-    for (uint8_t b = MaxBrightness; b > MinBrightness; b--) {
-      strip.setBrightness(b * 255 / 255);
-      for (uint16_t i = 0; i < strip.numPixels(); i++) {
-        strip.setPixelColor(i, c);
-      }
-      strip.show();
-      delay(fadeOutWait);
-    }
-  }
-}
-
-void rainbowFadeInOut(uint8_t x) {
-  for (int j = 0; j < x; j++) {
-    for (uint8_t b = MinBrightness; b < MaxBrightness; b++) {
-      strip.setBrightness(b * 255 / 255);
-      for (uint8_t i = 0; i < strip.numPixels(); i++) {
-        strip.setPixelColor(i, Wheel(i * 256 / strip.numPixels()));
-      }
-      strip.show();
-      delay(fadeInWait);
+      delay(y);
     }
     for (uint8_t b = MaxBrightness; b > MinBrightness; b--) {
       strip.setBrightness(b * 255 / 255);
@@ -132,7 +97,7 @@ void rainbowFadeInOut(uint8_t x) {
 }
 
 
-//NeoPixel Wheel for Rainbow-----------------
+//NeoPixel Wheel for Rainbow---------------------------------------
 
 uint32_t Wheel(byte WheelPos) {
   WheelPos = 160 - WheelPos;       //the value here means - for 255 the strip will starts with red, 127-red will be in the middle, 0 - strip ends with red.
@@ -146,4 +111,3 @@ uint32_t Wheel(byte WheelPos) {
   WheelPos -= 170;
   return strip.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
 }
-
